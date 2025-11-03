@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -60,6 +61,7 @@ const products: Product[] = [
 ];
 
 const Index = () => {
+  const navigate = useNavigate();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
@@ -89,7 +91,7 @@ const Index = () => {
               <Button variant="ghost" className="font-medium">Новинки</Button>
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" className="font-medium">
+                  <Button variant="ghost" className="font-medium" onClick={() => navigate('/category/dresses')}>
                     Платья <Icon name="ChevronDown" size={16} className="ml-1" />
                   </Button>
                 </SheetTrigger>
@@ -127,7 +129,7 @@ const Index = () => {
                   </span>
                 )}
               </Button>
-              <Button variant="ghost" size="icon" className="relative">
+              <Button variant="ghost" size="icon" className="relative" onClick={() => navigate('/cart')}>
                 <Icon name="ShoppingBag" size={20} />
                 {cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -399,7 +401,13 @@ const Index = () => {
                   </div>
 
                   <div>
-                    <h4 className="font-semibold mb-3">Выберите размер</h4>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="font-semibold">Выберите размер</h4>
+                      <Button variant="link" className="p-0 h-auto text-sm">
+                        <Icon name="Sparkles" size={14} className="mr-1" />
+                        Помощник по размеру
+                      </Button>
+                    </div>
                     <div className="flex flex-wrap gap-2">
                       {selectedProduct.sizes.map(size => (
                         <Button 
