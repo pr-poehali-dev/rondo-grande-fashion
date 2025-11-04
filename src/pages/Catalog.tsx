@@ -70,7 +70,7 @@ const Catalog = () => {
   const [showFilters, setShowFilters] = useState(true);
 
   const categories = ['Платья', 'Верхняя одежда', 'Низ'];
-  const sizes = ['52', '54', '56', '58', '60', '62'];
+  const sizes = ['52', '54', '56', '58'];
 
   const addToWishlist = () => {
     setWishlistCount(prev => prev + 1);
