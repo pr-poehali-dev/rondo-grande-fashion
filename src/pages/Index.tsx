@@ -136,13 +136,10 @@ const Index = () => {
             </nav>
 
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="text-white hover:text-white/80">
-                <Icon name="Search" size={20} />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-white hover:text-white/80">
+              <Button variant="ghost" size="icon" className="text-white hover:text-white/80" onClick={() => navigate('/account')}>
                 <Icon name="User" size={20} />
               </Button>
-              <Button variant="ghost" size="icon" className="relative text-white hover:text-white/80">
+              <Button variant="ghost" size="icon" className="relative text-white hover:text-white/80" onClick={() => navigate('/account')}>
                 <Icon name="Heart" size={20} />
                 {wishlistCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -183,7 +180,7 @@ const Index = () => {
                     {slide.title}
                   </h2>
                   <p className="text-xl mb-8">{slide.subtitle}</p>
-                  <Button size="lg" className="bg-white text-foreground hover:bg-white/90">
+                  <Button size="lg" className="bg-white text-foreground hover:bg-white/90" onClick={() => navigate('/catalog')}>
                     Смотреть коллекцию
                   </Button>
                 </div>
@@ -281,7 +278,7 @@ const Index = () => {
           <div className="container mx-auto px-4">
             <div className="flex justify-between items-center mb-8">
               <h2 className="font-heading text-3xl font-bold">Новинки</h2>
-              <Button variant="link" className="font-medium">
+              <Button variant="link" className="font-medium" onClick={() => navigate('/catalog')}>
                 Смотреть все <Icon name="ArrowRight" size={16} className="ml-2" />
               </Button>
             </div>
