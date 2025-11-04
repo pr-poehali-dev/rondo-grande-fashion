@@ -255,6 +255,7 @@ const Index = () => {
                   key={category} 
                   className="group cursor-pointer overflow-hidden border-border hover:shadow-lg transition-shadow animate-scale-in"
                   style={{ animationDelay: `${index * 0.1}s` }}
+                  onClick={() => navigate(`/catalog?category=${category}`)}
                 >
                   <CardContent className="p-0">
                     <div className="aspect-square overflow-hidden">

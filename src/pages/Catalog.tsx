@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -62,6 +62,7 @@ const allProducts: Product[] = [
 
 const Catalog = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [wishlistCount, setWishlistCount] = useState(0);
   const [cartCount] = useState(0);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -71,6 +72,13 @@ const Catalog = () => {
 
   const categories = ['Платья', 'Верхняя одежда', 'Низ'];
   const sizes = ['52', '54', '56', '58'];
+
+  useEffect(() => {
+    const category = searchParams.get('category');
+    if (category) {
+      setSelectedCategories([category]);
+    }
+  }, [searchParams]);
 
   const addToWishlist = () => {
     setWishlistCount(prev => prev + 1);
