@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -60,11 +59,30 @@ const products: Product[] = [
   },
 ];
 
+const heroSlides = [
+  {
+    image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/63d33282-3ae8-4598-832b-4fb76c5a8ea9.jpg',
+    title: 'Стиль без компромиссов',
+    subtitle: 'Элегантность для активной жизни'
+  },
+  {
+    image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/51cbc8b0-2b20-45cd-8aa6-f863323793ce.jpg',
+    title: 'Вечерняя коллекция',
+    subtitle: 'Роскошь в каждой детали'
+  },
+  {
+    image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/33d7474f-276b-4729-9b3f-4ada10105be7.jpg',
+    title: 'Базовый гардероб',
+    subtitle: 'Классика, которая всегда в моде'
+  }
+];
+
 const Index = () => {
   const navigate = useNavigate();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   const addToCart = () => {
     setCartCount(prev => prev + 1);
@@ -74,24 +92,28 @@ const Index = () => {
     setWishlistCount(prev => prev + 1);
   };
 
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
+  };
+
   return (
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 bg-background border-b border-border">
-        <div className="bg-primary text-primary-foreground py-2 text-center text-sm">
-          Бесплатная доставка от 5000₽ • Примерка 30 дней • Поддержка 24/7
-        </div>
-        
+      <header className="sticky top-0 z-50 border-b border-border" style={{backgroundColor: '#878070'}}>
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-8">
-              <h1 className="font-heading text-2xl font-bold tracking-tight">RONDO GRANDE</h1>
+              <h1 className="font-heading text-2xl font-bold tracking-tight text-white">RONDO GRANDE</h1>
             </div>
 
             <nav className="hidden lg:flex items-center gap-6">
-              <Button variant="ghost" className="font-medium">Новинки</Button>
+              <Button variant="ghost" className="font-medium text-white hover:text-white/80">Новинки</Button>
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" className="font-medium" onClick={() => navigate('/category/dresses')}>
+                  <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/category/dresses')}>
                     Платья <Icon name="ChevronDown" size={16} className="ml-1" />
                   </Button>
                 </SheetTrigger>
@@ -108,20 +130,19 @@ const Index = () => {
                   </div>
                 </SheetContent>
               </Sheet>
-              <Button variant="ghost" className="font-medium">Верхняя одежда</Button>
-              <Button variant="ghost" className="font-medium">Низ</Button>
-              <Button variant="ghost" className="font-medium">Аксессуары</Button>
+              <Button variant="ghost" className="font-medium text-white hover:text-white/80">Верхняя одежда</Button>
+              <Button variant="ghost" className="font-medium text-white hover:text-white/80">Низ</Button>
               <Button variant="ghost" className="text-destructive font-semibold">Распродажа</Button>
             </nav>
 
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="text-white hover:text-white/80">
                 <Icon name="Search" size={20} />
               </Button>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="text-white hover:text-white/80">
                 <Icon name="User" size={20} />
               </Button>
-              <Button variant="ghost" size="icon" className="relative">
+              <Button variant="ghost" size="icon" className="relative text-white hover:text-white/80">
                 <Icon name="Heart" size={20} />
                 {wishlistCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -129,7 +150,7 @@ const Index = () => {
                   </span>
                 )}
               </Button>
-              <Button variant="ghost" size="icon" className="relative" onClick={() => navigate('/cart')}>
+              <Button variant="ghost" size="icon" className="relative text-white hover:text-white/80" onClick={() => navigate('/cart')}>
                 <Icon name="ShoppingBag" size={20} />
                 {cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
@@ -144,21 +165,59 @@ const Index = () => {
 
       <main>
         <section className="relative h-[600px] overflow-hidden">
-          <img 
-            src="https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/691f3ee5-ed1e-44b8-9454-b2e4654cc790.jpg"
-            alt="Hero"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
-            <div className="text-center text-white animate-fade-in">
-              <h2 className="font-heading text-5xl md:text-6xl font-bold mb-4">
-                Стиль без компромиссов
-              </h2>
-              <p className="text-xl mb-8">Элегантность для активной жизни</p>
-              <Button size="lg" className="bg-white text-foreground hover:bg-white/90">
-                Смотреть коллекцию
-              </Button>
+          {heroSlides.map((slide, index) => (
+            <div
+              key={index}
+              className={`absolute inset-0 transition-opacity duration-700 ${
+                index === currentSlide ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <img 
+                src={slide.image}
+                alt={slide.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                <div className="text-center text-white animate-fade-in">
+                  <h2 className="font-heading text-5xl md:text-6xl font-bold mb-4">
+                    {slide.title}
+                  </h2>
+                  <p className="text-xl mb-8">{slide.subtitle}</p>
+                  <Button size="lg" className="bg-white text-foreground hover:bg-white/90">
+                    Смотреть коллекцию
+                  </Button>
+                </div>
+              </div>
             </div>
+          ))}
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white"
+            onClick={prevSlide}
+          >
+            <Icon name="ChevronLeft" size={32} />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 hover:bg-white/30 text-white"
+            onClick={nextSlide}
+          >
+            <Icon name="ChevronRight" size={32} />
+          </Button>
+
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+            {heroSlides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2 h-2 rounded-full transition-all ${
+                  index === currentSlide ? 'bg-white w-8' : 'bg-white/50'
+                }`}
+              />
+            ))}
           </div>
         </section>
 
@@ -193,8 +252,8 @@ const Index = () => {
         <section className="py-16">
           <div className="container mx-auto px-4">
             <h2 className="font-heading text-3xl font-bold text-center mb-12">Популярные категории</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {['Платья', 'Верхняя одежда', 'Низ', 'Аксессуары'].map((category, index) => (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {['Платья', 'Верхняя одежда', 'Низ'].map((category, index) => (
                 <Card 
                   key={category} 
                   className="group cursor-pointer overflow-hidden border-border hover:shadow-lg transition-shadow animate-scale-in"
@@ -289,26 +348,7 @@ const Index = () => {
           </div>
         </section>
 
-        <section className="py-16">
-          <div className="container mx-auto px-4">
-            <div className="max-w-2xl mx-auto text-center">
-              <h2 className="font-heading text-3xl font-bold mb-4">Подпишитесь на новости</h2>
-              <p className="text-muted-foreground mb-6">
-                Получайте советы по стилю и эксклюзивные предложения
-              </p>
-              <div className="flex gap-2">
-                <Input 
-                  type="email" 
-                  placeholder="Ваш email"
-                  className="flex-1"
-                />
-                <Button className="bg-primary hover:bg-primary/90">
-                  Подписаться и получить 15%
-                </Button>
-              </div>
-            </div>
-          </div>
-        </section>
+
       </main>
 
       <footer className="bg-muted py-12 border-t border-border">
@@ -344,7 +384,6 @@ const Index = () => {
                 <li><Button variant="link" className="p-0 h-auto">Платья</Button></li>
                 <li><Button variant="link" className="p-0 h-auto">Верхняя одежда</Button></li>
                 <li><Button variant="link" className="p-0 h-auto">Низ</Button></li>
-                <li><Button variant="link" className="p-0 h-auto">Аксессуары</Button></li>
               </ul>
             </div>
             <div>
