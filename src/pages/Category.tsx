@@ -43,7 +43,7 @@ const products: Product[] = [
     price: 14900,
     image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/691f3ee5-ed1e-44b8-9454-b2e4654cc790.jpg',
     category: 'Вечерние',
-    sizes: ['48', '50', '52', '54', '56', '58', '60'],
+    sizes: ['52', '54', '56', '58'],
     color: 'Черный',
     material: 'Шелк',
     isBestseller: true,
@@ -54,7 +54,7 @@ const products: Product[] = [
     price: 9900,
     image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/a611f61e-75a0-498e-9633-c1044afb2b86.jpg',
     category: 'Деловые',
-    sizes: ['48', '50', '52', '54'],
+    sizes: ['52', '54', '56', '58'],
     color: 'Синий',
     material: 'Шерсть',
   },
@@ -65,7 +65,7 @@ const products: Product[] = [
     oldPrice: 10900,
     image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/b348a6c0-a753-4572-804f-7934afe40ca1.jpg',
     category: 'Макси',
-    sizes: ['48', '50', '52', '54', '56'],
+    sizes: ['52', '54', '56', '58'],
     color: 'Бежевый',
     material: 'Лен',
     isNew: true,
@@ -80,7 +80,7 @@ const Category = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState('popularity');
 
-  const sizes = ['48', '50', '52', '54', '56', '58', '60', '62', '64'];
+  const sizes = ['52', '54', '56', '58'];
   const colors = ['Бежевый', 'Черный', 'Синий', 'Белый', 'Серый'];
   const categories = ['Повседневные', 'Вечерние', 'Деловые', 'Макси', 'Миди'];
 

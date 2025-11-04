@@ -38,7 +38,6 @@ const Cart = () => {
   ]);
 
   const [promoCode, setPromoCode] = useState('');
-  const [promoApplied, setPromoApplied] = useState(false);
 
   const updateQuantity = (id: number, delta: number) => {
     setCartItems(items =>
@@ -55,18 +54,11 @@ const Cart = () => {
   };
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const discount = promoApplied ? subtotal * 0.15 : 0;
   const freeShippingThreshold = 5000;
   const shipping = subtotal >= freeShippingThreshold ? 0 : 500;
-  const total = subtotal - discount + shipping;
+  const total = subtotal + shipping;
 
   const freeShippingProgress = Math.min((subtotal / freeShippingThreshold) * 100, 100);
-
-  const applyPromo = () => {
-    if (promoCode.toUpperCase() === 'WELCOME15') {
-      setPromoApplied(true);
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -188,12 +180,7 @@ const Cart = () => {
                         <span>{subtotal.toLocaleString()}₽</span>
                       </div>
                       
-                      {discount > 0 && (
-                        <div className="flex justify-between text-green-600">
-                          <span>Скидка 15%</span>
-                          <span>-{discount.toLocaleString()}₽</span>
-                        </div>
-                      )}
+
                       
                       <div className="flex justify-between">
                         <span className="text-muted-foreground">Доставка</span>
@@ -210,29 +197,11 @@ const Cart = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <div className="flex gap-2">
-                      <Input
-                        placeholder="Промокод"
-                        value={promoCode}
-                        onChange={(e) => setPromoCode(e.target.value)}
-                        disabled={promoApplied}
-                      />
-                      <Button
-                        variant="outline"
-                        onClick={applyPromo}
-                        disabled={promoApplied}
-                      >
-                        {promoApplied ? 'Применён' : 'ОК'}
-                      </Button>
-                    </div>
-                    {promoApplied && (
-                      <p className="text-xs text-green-600">Промокод WELCOME15 применён!</p>
-                    )}
-                    {!promoApplied && (
-                      <p className="text-xs text-muted-foreground">
-                        Попробуйте WELCOME15 для скидки 15%
-                      </p>
-                    )}
+                    <Input
+                      placeholder="У вас есть промокод?"
+                      value={promoCode}
+                      onChange={(e) => setPromoCode(e.target.value)}
+                    />
                   </div>
 
                   <Button className="w-full" size="lg">

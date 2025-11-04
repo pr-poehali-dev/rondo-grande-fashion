@@ -27,7 +27,7 @@ const products: Product[] = [
     oldPrice: 12900,
     image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/691f3ee5-ed1e-44b8-9454-b2e4654cc790.jpg',
     category: 'Платья',
-    sizes: ['48', '50', '52', '54', '56'],
+    sizes: ['52', '54', '56', '58'],
     isNew: true,
   },
   {
@@ -36,7 +36,7 @@ const products: Product[] = [
     price: 4900,
     image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/a611f61e-75a0-498e-9633-c1044afb2b86.jpg',
     category: 'Верхняя одежда',
-    sizes: ['48', '50', '52', '54', '56', '58'],
+    sizes: ['52', '54', '56', '58'],
     isBestseller: true,
   },
   {
@@ -45,7 +45,7 @@ const products: Product[] = [
     price: 6900,
     image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/b348a6c0-a753-4572-804f-7934afe40ca1.jpg',
     category: 'Низ',
-    sizes: ['48', '50', '52', '54'],
+    sizes: ['52', '54', '56', '58'],
     isNew: true,
   },
   {
@@ -54,7 +54,7 @@ const products: Product[] = [
     price: 14900,
     image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/691f3ee5-ed1e-44b8-9454-b2e4654cc790.jpg',
     category: 'Платья',
-    sizes: ['48', '50', '52', '54', '56', '58', '60'],
+    sizes: ['52', '54', '56', '58'],
     isBestseller: true,
   },
 ];
@@ -440,13 +440,7 @@ const Index = () => {
                   </div>
 
                   <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-semibold">Выберите размер</h4>
-                      <Button variant="link" className="p-0 h-auto text-sm">
-                        <Icon name="Sparkles" size={14} className="mr-1" />
-                        Помощник по размеру
-                      </Button>
-                    </div>
+                    <h4 className="font-semibold mb-3">Выберите размер</h4>
                     <div className="flex flex-wrap gap-2">
                       {selectedProduct.sizes.map(size => (
                         <Button 
