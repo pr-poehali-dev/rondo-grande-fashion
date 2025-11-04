@@ -164,6 +164,14 @@ const Checkout = () => {
                   </div>
                   
                   <div className="flex items-start space-x-3 space-y-0 rounded-md border p-4 cursor-pointer hover:bg-accent/50 transition-colors mt-3">
+                    <RadioGroupItem value="sbp" id="sbp" />
+                    <Label htmlFor="sbp" className="flex-1 cursor-pointer">
+                      <p className="font-semibold">СБП</p>
+                      <p className="text-sm text-muted-foreground">Система быстрых платежей</p>
+                    </Label>
+                  </div>
+                  
+                  <div className="flex items-start space-x-3 space-y-0 rounded-md border p-4 cursor-pointer hover:bg-accent/50 transition-colors mt-3">
                     <RadioGroupItem value="cash" id="cash" />
                     <Label htmlFor="cash" className="flex-1 cursor-pointer">
                       <p className="font-semibold">При получении</p>
