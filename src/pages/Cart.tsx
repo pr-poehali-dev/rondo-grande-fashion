@@ -204,7 +204,7 @@ const Cart = () => {
                     />
                   </div>
 
-                  <Button className="w-full" size="lg">
+                  <Button className="w-full" size="lg" onClick={() => navigate('/checkout')}>
                     Оформить заказ
                   </Button>
 
