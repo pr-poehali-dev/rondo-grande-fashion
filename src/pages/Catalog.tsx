@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Icon from '@/components/ui/icon';
 
 interface Product {
@@ -64,7 +65,8 @@ const Catalog = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [wishlistCount, setWishlistCount] = useState(0);
-  const [cartCount] = useState(0);
+  const [cartCount, setCartCount] = useState(0);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<number[]>([0, 20000]);
@@ -79,6 +81,10 @@ const Catalog = () => {
       setSelectedCategories([category]);
     }
   }, [searchParams]);
+
+  const addToCart = () => {
+    setCartCount(prev => prev + 1);
+  };
 
   const addToWishlist = () => {
     setWishlistCount(prev => prev + 1);
@@ -253,6 +259,7 @@ const Catalog = () => {
               key={product.id} 
               className="group cursor-pointer overflow-hidden border-border hover:shadow-lg transition-shadow animate-fade-in"
               style={{ animationDelay: `${index * 0.1}s` }}
+              onClick={() => setSelectedProduct(product)}
             >
               <CardContent className="p-0">
                 <div className="relative aspect-[3/4] overflow-hidden">
@@ -324,6 +331,85 @@ const Catalog = () => {
           </div>
         </div>
       </div>
+
+      <Dialog open={!!selectedProduct} onOpenChange={() => setSelectedProduct(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          {selectedProduct && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="font-heading text-2xl">{selectedProduct.name}</DialogTitle>
+              </DialogHeader>
+              <div className="grid md:grid-cols-2 gap-6 mt-4">
+                <div className="relative aspect-[3/4] overflow-hidden rounded-lg">
+                  <img
+                    src={selectedProduct.image}
+                    alt={selectedProduct.name}
+                    className="w-full h-full object-cover"
+                  />
+                  {selectedProduct.isNew && (
+                    <Badge className="absolute top-4 left-4 bg-primary text-primary-foreground">Новинка</Badge>
+                  )}
+                  {selectedProduct.isBestseller && (
+                    <Badge variant="secondary" className="absolute top-4 left-4 mt-10">Хит продаж</Badge>
+                  )}
+                </div>
+                <div className="space-y-6">
+                  <div>
+                    <p className="text-muted-foreground mb-2">{selectedProduct.category}</p>
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl font-bold">{selectedProduct.price.toLocaleString()}₽</span>
+                      {selectedProduct.oldPrice && (
+                        <span className="text-xl text-muted-foreground line-through">
+                          {selectedProduct.oldPrice.toLocaleString()}₽
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="font-medium mb-3">Выберите размер:</p>
+                    <div className="flex gap-2">
+                      {selectedProduct.sizes.map(size => (
+                        <Button key={size} variant="outline" className="w-16">
+                          {size}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <Button size="lg" className="w-full" onClick={addToCart}>
+                      <Icon name="ShoppingBag" size={20} className="mr-2" />
+                      Добавить в корзину
+                    </Button>
+                    <Button size="lg" variant="outline" className="w-full" onClick={addToWishlist}>
+                      <Icon name="Heart" size={20} className="mr-2" />
+                      В избранное
+                    </Button>
+                  </div>
+
+                  <div className="border-t pt-6 space-y-4">
+                    <div className="flex items-start gap-3">
+                      <Icon name="Truck" size={20} className="text-primary mt-1" />
+                      <div>
+                        <p className="font-medium">Бесплатная доставка</p>
+                        <p className="text-sm text-muted-foreground">При заказе от 5000₽</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Icon name="RotateCcw" size={20} className="text-primary mt-1" />
+                      <div>
+                        <p className="font-medium">Возврат 14 дней</p>
+                        <p className="text-sm text-muted-foreground">Без объяснения причин</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
