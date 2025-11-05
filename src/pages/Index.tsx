@@ -364,9 +364,12 @@ const Index = () => {
             <div>
               <h4 className="font-heading font-semibold mb-4">Категории</h4>
               <ul className="space-y-2 text-sm">
-                <li><Button variant="link" className="p-0 h-auto">Платья</Button></li>
-                <li><Button variant="link" className="p-0 h-auto">Верхняя одежда</Button></li>
-                <li><Button variant="link" className="p-0 h-auto">Низ</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/catalog?category=Платья')}>Платья</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/catalog?category=Юбки и брюки')}>Юбки и брюки</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/catalog?category=Кардиганы и жилеты')}>Кардиганы и жилеты</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/catalog?category=Жакеты')}>Жакеты</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/catalog?category=Блузы и рубашки')}>Блузы и рубашки</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/catalog?category=Свитшоты, худи и лонгсливы')}>Свитшоты и худи</Button></li>
               </ul>
             </div>
             <div>
