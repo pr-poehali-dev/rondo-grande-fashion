@@ -356,9 +356,9 @@ const Index = () => {
             <div>
               <h4 className="font-heading font-semibold mb-4">Покупателям</h4>
               <ul className="space-y-2 text-sm">
-                <li><Button variant="link" className="p-0 h-auto">Личный кабинет</Button></li>
-                <li><Button variant="link" className="p-0 h-auto">Отследить заказ</Button></li>
-                <li><Button variant="link" className="p-0 h-auto">Программа лояльности</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/account')}>Личный кабинет</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/account')}>Отследить заказ</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/account')}>Программа лояльности</Button></li>
               </ul>
             </div>
             <div>
