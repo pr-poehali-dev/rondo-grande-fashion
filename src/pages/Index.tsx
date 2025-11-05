@@ -35,7 +35,7 @@ const products: Product[] = [
     name: 'Блуза классическая',
     price: 4900,
     image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/a611f61e-75a0-498e-9633-c1044afb2b86.jpg',
-    category: 'Верхняя одежда',
+    category: 'Блузы и рубашки',
     sizes: ['52', '54', '56', '58'],
     isBestseller: true,
   },
@@ -44,7 +44,7 @@ const products: Product[] = [
     name: 'Брюки с высокой посадкой',
     price: 6900,
     image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/b348a6c0-a753-4572-804f-7934afe40ca1.jpg',
-    category: 'Низ',
+    category: 'Юбки и брюки',
     sizes: ['52', '54', '56', '58'],
     isNew: true,
   },
@@ -111,27 +111,12 @@ const Index = () => {
 
             <nav className="hidden lg:flex items-center gap-6">
               <Button variant="ghost" className="font-medium text-white hover:text-white/80">Новинки</Button>
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/category/dresses')}>
-                    Платья <Icon name="ChevronDown" size={16} className="ml-1" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="top" className="h-auto">
-                  <SheetHeader>
-                    <SheetTitle>Платья</SheetTitle>
-                  </SheetHeader>
-                  <div className="grid grid-cols-4 gap-4 mt-6">
-                    {['Повседневные', 'Вечерние', 'Деловые', 'Макси', 'Миди'].map(item => (
-                      <Button key={item} variant="ghost" className="justify-start">
-                        {item}
-                      </Button>
-                    ))}
-                  </div>
-                </SheetContent>
-              </Sheet>
-              <Button variant="ghost" className="font-medium text-white hover:text-white/80">Верхняя одежда</Button>
-              <Button variant="ghost" className="font-medium text-white hover:text-white/80">Низ</Button>
+              <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Платья')}>Платья</Button>
+              <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Юбки и брюки')}>Юбки и брюки</Button>
+              <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Кардиганы и жилеты')}>Кардиганы и жилеты</Button>
+              <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Жакеты')}>Жакеты</Button>
+              <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Блузы и рубашки')}>Блузы и рубашки</Button>
+              <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Свитшоты, худи и лонгсливы')}>Свитшоты и худи</Button>
               <Button variant="ghost" className="text-destructive font-semibold">Распродажа</Button>
             </nav>
 
@@ -250,7 +235,7 @@ const Index = () => {
           <div className="container mx-auto px-4">
             <h2 className="font-heading text-3xl font-bold text-center mb-12">Популярные категории</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {['Платья', 'Верхняя одежда', 'Низ'].map((category, index) => (
+              {['Платья', 'Юбки и брюки', 'Кардиганы и жилеты', 'Жакеты', 'Блузы и рубашки', 'Свитшоты, худи и лонгсливы'].map((category, index) => (
                 <Card 
                   key={category} 
                   className="group cursor-pointer overflow-hidden border-border hover:shadow-lg transition-shadow animate-scale-in"
