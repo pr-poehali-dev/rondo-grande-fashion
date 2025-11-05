@@ -17,6 +17,7 @@ interface Product {
   image: string;
   category: string;
   sizes: string[];
+  colors: string[];
   isNew?: boolean;
   isBestseller?: boolean;
 }
@@ -30,6 +31,7 @@ const allProducts: Product[] = [
     image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/691f3ee5-ed1e-44b8-9454-b2e4654cc790.jpg',
     category: 'Платья',
     sizes: ['52', '54', '56', '58'],
+    colors: ['бордовый'],
     isNew: true,
   },
   {
@@ -39,6 +41,7 @@ const allProducts: Product[] = [
     image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/a611f61e-75a0-498e-9633-c1044afb2b86.jpg',
     category: 'Блузы и рубашки',
     sizes: ['52', '54', '56', '58'],
+    colors: ['белый'],
     isBestseller: true,
   },
   {
@@ -48,6 +51,7 @@ const allProducts: Product[] = [
     image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/b348a6c0-a753-4572-804f-7934afe40ca1.jpg',
     category: 'Юбки и брюки',
     sizes: ['52', '54', '56', '58'],
+    colors: ['графит'],
     isNew: true,
   },
   {
@@ -57,6 +61,7 @@ const allProducts: Product[] = [
     image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/691f3ee5-ed1e-44b8-9454-b2e4654cc790.jpg',
     category: 'Платья',
     sizes: ['52', '54', '56', '58'],
+    colors: ['голубой', 'бирюзовый'],
     isBestseller: true,
   },
 ];
@@ -69,11 +74,13 @@ const Catalog = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<number[]>([0, 20000]);
   const [showFilters, setShowFilters] = useState(true);
 
   const categories = ['Платья', 'Юбки и брюки', 'Кардиганы и жилеты', 'Жакеты', 'Блузы и рубашки', 'Свитшоты, худи и лонгсливы'];
   const sizes = ['52', '54', '56', '58'];
+  const colors = ['белый', 'бирюзовый', 'бордовый', 'голубой', 'графит', 'какао'];
 
   useEffect(() => {
     const category = searchParams.get('category');
@@ -106,17 +113,27 @@ const Catalog = () => {
     );
   };
 
+  const toggleColor = (color: string) => {
+    setSelectedColors(prev =>
+      prev.includes(color)
+        ? prev.filter(c => c !== color)
+        : [...prev, color]
+    );
+  };
+
   const resetFilters = () => {
     setSelectedCategories([]);
     setSelectedSizes([]);
+    setSelectedColors([]);
     setPriceRange([0, 20000]);
   };
 
   const filteredProducts = allProducts.filter(product => {
     const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(product.category);
     const sizeMatch = selectedSizes.length === 0 || product.sizes.some(size => selectedSizes.includes(size));
+    const colorMatch = selectedColors.length === 0 || product.colors.some(color => selectedColors.includes(color));
     const priceMatch = product.price >= priceRange[0] && product.price <= priceRange[1];
-    return categoryMatch && sizeMatch && priceMatch;
+    return categoryMatch && sizeMatch && colorMatch && priceMatch;
   });
 
   return (
@@ -215,6 +232,24 @@ const Catalog = () => {
                       />
                       <Label htmlFor={size} className="cursor-pointer text-sm">
                         {size}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium mb-3">Цвет</h4>
+                <div className="space-y-2">
+                  {colors.map(color => (
+                    <div key={color} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={color}
+                        checked={selectedColors.includes(color)}
+                        onCheckedChange={() => toggleColor(color)}
+                      />
+                      <Label htmlFor={color} className="cursor-pointer text-sm capitalize">
+                        {color}
                       </Label>
                     </div>
                   ))}
