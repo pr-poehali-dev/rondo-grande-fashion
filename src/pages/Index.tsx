@@ -372,14 +372,23 @@ const Index = () => {
             <div>
               <h4 className="font-heading font-semibold mb-4">Мы в соцсетях</h4>
               <div className="flex gap-3">
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Icon name="Instagram" size={20} />
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="rounded-full"
+                  onClick={() => window.open('https://vk.com/rg22012024?from=groups', '_blank')}
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14c5.6 0 6.93-1.33 6.93-6.93V8.93C22 3.33 20.67 2 15.07 2zm3.11 14.77h-1.39c-.55 0-.72-.45-1.71-1.44-.86-.83-1.24-.94-1.45-.94-.3 0-.38.08-.38.47v1.31c0 .36-.11.57-1.07.57-1.58 0-3.33-.96-4.55-2.74-1.85-2.57-2.36-4.51-2.36-4.91 0-.21.08-.41.47-.41h1.39c.35 0 .48.16.61.54.71 2.05 1.91 3.84 2.4 3.84.19 0 .27-.09.27-.57v-2.22c-.06-.99-.58-1.08-.58-1.43 0-.17.14-.34.36-.34h2.18c.3 0 .41.16.41.51v3c0 .3.13.41.21.41.19 0 .35-.11.7-.47 1.07-1.2 1.84-3.06 1.84-3.06.1-.21.27-.41.62-.41h1.39c.42 0 .51.21.42.51-.15.75-1.93 3.39-1.93 3.39-.16.26-.22.38 0 .67.16.22.69.68 1.05 1.09.65.75 1.14 1.38 1.27 1.81.12.43-.1.65-.52.65z"/>
+                  </svg>
                 </Button>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Icon name="Facebook" size={20} />
-                </Button>
-                <Button variant="ghost" size="icon" className="rounded-full">
-                  <Icon name="MessageCircle" size={20} />
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="rounded-full"
+                  onClick={() => window.open('https://t.me/RONDO_GRANDE', '_blank')}
+                >
+                  <Icon name="Send" size={20} />
                 </Button>
               </div>
             </div>
