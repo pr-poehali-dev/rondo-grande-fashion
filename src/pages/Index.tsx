@@ -226,7 +226,7 @@ const Index = () => {
                   <Icon name="Ruler" size={28} className="text-primary" />
                 </div>
                 <h3 className="font-heading font-semibold text-lg mb-2">Идеальная посадка</h3>
-                <p className="text-muted-foreground">Размеры от 48 до 64, точные таблицы</p>
+                <p className="text-muted-foreground">Размеры от 52 до 58</p>
               </div>
               <div className="text-center animate-fade-in" style={{ animationDelay: '0.1s' }}>
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
