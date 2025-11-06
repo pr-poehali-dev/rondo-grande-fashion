@@ -419,6 +419,8 @@ const Catalog = () => {
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<number[]>([0, 20000]);
   const [showFilters, setShowFilters] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   const categories = ['Платья', 'Юбки и брюки', 'Кардиганы и жилеты', 'Жакеты', 'Блузы и рубашки', 'Свитшоты, худи и лонгсливы'];
   const sizes = ['52', '54', '56', '58'];
@@ -477,6 +479,15 @@ const Catalog = () => {
     const priceMatch = product.price >= priceRange[0] && product.price <= priceRange[1];
     return categoryMatch && sizeMatch && colorMatch && priceMatch;
   });
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentProducts = filteredProducts.slice(startIndex, endIndex);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategories, selectedSizes, selectedColors, priceRange]);
 
   return (
     <div className="min-h-screen bg-background">
@@ -632,7 +643,7 @@ const Catalog = () => {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProducts.map((product, index) => (
+              {currentProducts.map((product, index) => (
             <Card 
               key={product.id} 
               className="group cursor-pointer overflow-hidden border-border hover:shadow-lg transition-shadow animate-fade-in"
@@ -700,10 +711,39 @@ const Catalog = () => {
               </div>
             )}
 
-            {filteredProducts.length > 0 && (
-              <div className="mt-12 text-center">
-                <p className="text-muted-foreground mb-4">Показано {filteredProducts.length} из {allProducts.length} товаров</p>
-                <p className="text-sm text-muted-foreground">Скоро появятся новые коллекции</p>
+            {filteredProducts.length > 0 && totalPages > 1 && (
+              <div className="mt-12 flex justify-center items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <Icon name="ChevronLeft" size={16} />
+                </Button>
+                
+                <div className="flex gap-2">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                      className="min-w-[2.5rem]"
+                    >
+                      {page}
+                    </Button>
+                  ))}
+                </div>
+
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  <Icon name="ChevronRight" size={16} />
+                </Button>
               </div>
             )}
           </div>
