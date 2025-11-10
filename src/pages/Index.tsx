@@ -83,6 +83,7 @@ const Index = () => {
   const [cartCount, setCartCount] = useState(0);
   const [wishlistCount, setWishlistCount] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [showSizeTable, setShowSizeTable] = useState(false);
 
   const addToCart = () => {
     setCartCount(prev => prev + 1);
@@ -342,7 +343,7 @@ const Index = () => {
                 <li><Button variant="link" className="p-0 h-auto">FAQ</Button></li>
                 <li><Button variant="link" className="p-0 h-auto">Доставка и оплата</Button></li>
                 <li><Button variant="link" className="p-0 h-auto">Возврат и обмен</Button></li>
-                <li><Button variant="link" className="p-0 h-auto">Таблица размеров</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => setShowSizeTable(true)}>Таблица размеров</Button></li>
               </ul>
             </div>
             <div>
@@ -439,7 +440,7 @@ const Index = () => {
                         </Button>
                       ))}
                     </div>
-                    <Button variant="link" className="mt-2 p-0 h-auto text-sm">
+                    <Button variant="link" className="mt-2 p-0 h-auto text-sm" onClick={(e) => { e.stopPropagation(); setShowSizeTable(true); }}>
                       Таблица размеров
                     </Button>
                   </div>
@@ -487,6 +488,58 @@ const Index = () => {
               </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showSizeTable} onOpenChange={setShowSizeTable}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-2xl text-center">Таблица размеров</DialogTitle>
+          </DialogHeader>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b">
+                  <th className="py-4 px-6 text-left font-semibold">Российский размер</th>
+                  <th className="py-4 px-6 text-left font-semibold">Обхват груди (см)</th>
+                  <th className="py-4 px-6 text-left font-semibold">Обхват талии (см)</th>
+                  <th className="py-4 px-6 text-left font-semibold">Обхват бедер (см)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b hover:bg-muted/50">
+                  <td className="py-4 px-6 text-center text-lg">50</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">98-102</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">78-83</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">106-110</td>
+                </tr>
+                <tr className="border-b hover:bg-muted/50">
+                  <td className="py-4 px-6 text-center text-lg">52</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">102-106</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">84-90</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">110-114</td>
+                </tr>
+                <tr className="border-b hover:bg-muted/50">
+                  <td className="py-4 px-6 text-center text-lg">54</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">106-110</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">90-95</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">114-118</td>
+                </tr>
+                <tr className="border-b hover:bg-muted/50">
+                  <td className="py-4 px-6 text-center text-lg">56</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">110-114</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">95-100</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">118-122</td>
+                </tr>
+                <tr className="border-b hover:bg-muted/50">
+                  <td className="py-4 px-6 text-center text-lg">58</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">114-118</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">100-105</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">122-126</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
