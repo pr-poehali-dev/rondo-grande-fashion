@@ -420,6 +420,7 @@ const Catalog = () => {
   const [priceRange, setPriceRange] = useState<number[]>([0, 20000]);
   const [showFilters, setShowFilters] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showSizeTable, setShowSizeTable] = useState(false);
   const itemsPerPage = 6;
 
   const categories = ['Платья', 'Юбки и брюки', 'Кардиганы и жилеты', 'Жакеты', 'Блузы и рубашки', 'Свитшоты, худи и лонгсливы'];
@@ -793,6 +794,9 @@ const Catalog = () => {
                         </Button>
                       ))}
                     </div>
+                    <Button variant="link" className="mt-2 p-0 h-auto text-sm" onClick={(e) => { e.stopPropagation(); setShowSizeTable(true); }}>
+                      Таблица размеров
+                    </Button>
                   </div>
 
                   <div className="space-y-3">
@@ -826,6 +830,58 @@ const Catalog = () => {
               </div>
             </>
           )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showSizeTable} onOpenChange={setShowSizeTable}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle className="font-heading text-2xl text-center">Таблица размеров</DialogTitle>
+          </DialogHeader>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b">
+                  <th className="py-4 px-6 text-left font-semibold">Российский размер</th>
+                  <th className="py-4 px-6 text-left font-semibold">Обхват груди (см)</th>
+                  <th className="py-4 px-6 text-left font-semibold">Обхват талии (см)</th>
+                  <th className="py-4 px-6 text-left font-semibold">Обхват бедер (см)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-b hover:bg-muted/50">
+                  <td className="py-4 px-6 text-center text-lg">50</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">98-102</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">78-83</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">106-110</td>
+                </tr>
+                <tr className="border-b hover:bg-muted/50">
+                  <td className="py-4 px-6 text-center text-lg">52</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">102-106</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">84-90</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">110-114</td>
+                </tr>
+                <tr className="border-b hover:bg-muted/50">
+                  <td className="py-4 px-6 text-center text-lg">54</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">106-110</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">90-95</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">114-118</td>
+                </tr>
+                <tr className="border-b hover:bg-muted/50">
+                  <td className="py-4 px-6 text-center text-lg">56</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">110-114</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">95-100</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">118-122</td>
+                </tr>
+                <tr className="border-b hover:bg-muted/50">
+                  <td className="py-4 px-6 text-center text-lg">58</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">114-118</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">100-105</td>
+                  <td className="py-4 px-6 text-center text-muted-foreground">122-126</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
