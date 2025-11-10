@@ -575,7 +575,7 @@ const Index = () => {
               <Button 
                 onClick={handleCookieConsent}
                 className="flex-shrink-0 min-w-[120px]"
-                style={{backgroundColor: '#878070'}}
+                style={{backgroundColor: '#FF0000'}}
               >
                 Понятно
               </Button>
