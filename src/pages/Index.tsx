@@ -338,11 +338,13 @@ const Index = () => {
               </ul>
             </div>
             <div>
-              <h4 className="font-heading font-semibold mb-4">Помощь</h4>
+              <h4 className="font-heading font-semibold mb-4">Информация</h4>
               <ul className="space-y-2 text-sm">
-                <li><Button variant="link" className="p-0 h-auto">FAQ</Button></li>
-                <li><Button variant="link" className="p-0 h-auto">Доставка и оплата</Button></li>
-                <li><Button variant="link" className="p-0 h-auto">Возврат и обмен</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/delivery')}>Доставка и оплата</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/contacts')}>Контакты</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/returns')}>Возврат и обмен</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/offer')}>Договор оферты</Button></li>
+                <li><Button variant="link" className="p-0 h-auto" onClick={() => navigate('/privacy')}>Политика конфиденциальности</Button></li>
                 <li><Button variant="link" className="p-0 h-auto" onClick={() => setShowSizeTable(true)}>Таблица размеров</Button></li>
               </ul>
             </div>
