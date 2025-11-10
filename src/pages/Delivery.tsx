@@ -132,6 +132,26 @@ const Delivery = () => {
               </p>
             </div>
           </div>
+
+          <div className="border rounded-lg p-6 bg-muted/50 mt-6">
+            <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <Icon name="Info" size={20} className="text-primary" />
+              Преимущества ПВЗ СДЭК
+            </h3>
+            <p className="text-muted-foreground mb-3">
+              При использовании курьерской службы СДЭК возможна доставка до пункта выдачи заказов (ПВЗ). Это удобный способ получения заказов, который популярен среди наших клиентов. Именно поэтому их перечень постоянно растет, а комфортабельность и функционал совершенствуются. В ПВЗ есть примерочная зона и возможна оплата банковской картой.{' '}
+              <Button 
+                variant="link" 
+                className="p-0 h-auto inline"
+                onClick={() => window.open('https://www.cdek.ru/ru/offices/', '_blank')}
+              >
+                Посмотреть пункты выдачи заказов СДЭК в вашем населенном пункте можно здесь.
+              </Button>
+            </p>
+            <p className="text-muted-foreground">
+              В ПВЗ вы можете самостоятельно получить заказ в удобное для вас время, без очередей и ожидания курьера.
+            </p>
+          </div>
         </section>
 
         <Button onClick={() => navigate('/')} className="mt-8">
