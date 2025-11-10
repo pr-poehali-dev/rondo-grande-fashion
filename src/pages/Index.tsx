@@ -107,6 +107,9 @@ const Index = () => {
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-8">
               <h1 className="font-heading text-2xl font-bold tracking-tight text-white">RONDO GRANDE</h1>
+              <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog')}>
+                Каталог
+              </Button>
             </div>
 
             <div className="flex items-center gap-2">
