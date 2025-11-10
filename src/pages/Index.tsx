@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -84,6 +84,19 @@ const Index = () => {
   const [wishlistCount, setWishlistCount] = useState(0);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showSizeTable, setShowSizeTable] = useState(false);
+  const [showCookieConsent, setShowCookieConsent] = useState(false);
+
+  useEffect(() => {
+    const cookieConsent = localStorage.getItem('cookieConsent');
+    if (!cookieConsent) {
+      setShowCookieConsent(true);
+    }
+  }, []);
+
+  const handleCookieConsent = () => {
+    localStorage.setItem('cookieConsent', 'true');
+    setShowCookieConsent(false);
+  };
 
   const addToCart = () => {
     setCartCount(prev => prev + 1);
@@ -544,6 +557,32 @@ const Index = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {showCookieConsent && (
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t shadow-lg animate-in slide-in-from-bottom">
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+              <p className="text-sm text-muted-foreground">
+                Продолжая использовать наш сайт, Вы даете согласие на обработку файлов cookie, которые обеспечивают правильную работу сайта и соглашаетесь с нашей{' '}
+                <Button 
+                  variant="link" 
+                  className="p-0 h-auto text-sm underline"
+                  onClick={() => navigate('/privacy')}
+                >
+                  политикой конфиденциальности
+                </Button>
+              </p>
+              <Button 
+                onClick={handleCookieConsent}
+                className="flex-shrink-0 min-w-[120px]"
+                style={{backgroundColor: '#A0522D'}}
+              >
+                Понятно
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
