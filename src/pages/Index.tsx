@@ -109,17 +109,6 @@ const Index = () => {
               <h1 className="font-heading text-2xl font-bold tracking-tight text-white">RONDO GRANDE</h1>
             </div>
 
-            <nav className="hidden lg:flex items-center gap-6">
-              <Button variant="ghost" className="font-medium text-white hover:text-white/80">Новинки</Button>
-              <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Платья')}>Платья</Button>
-              <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Юбки и брюки')}>Юбки и брюки</Button>
-              <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Кардиганы и жилеты')}>Кардиганы и жилеты</Button>
-              <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Жакеты')}>Жакеты</Button>
-              <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Блузы и рубашки')}>Блузы и рубашки</Button>
-              <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Свитшоты, худи и лонгсливы')}>Свитшоты и худи</Button>
-              <Button variant="ghost" className="text-destructive font-semibold">Распродажа</Button>
-            </nav>
-
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" className="text-white hover:text-white/80" onClick={() => navigate('/account')}>
                 <Icon name="User" size={20} />
