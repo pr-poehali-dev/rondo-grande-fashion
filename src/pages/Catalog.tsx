@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -7,7 +8,9 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Icon from '@/components/ui/icon';
+import { useToast } from '@/hooks/use-toast';
 
 interface Product {
   id: number;
@@ -411,9 +414,14 @@ const allProducts: Product[] = [
 const Catalog = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [wishlistCount, setWishlistCount] = useState(0);
+  const { token, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  
+  const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
   const [cartCount, setCartCount] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedSize, setSelectedSize] = useState('');
+  const [showAddToCartDialog, setShowAddToCartDialog] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
   const [selectedColors, setSelectedColors] = useState<string[]>([]);
@@ -427,6 +435,21 @@ const Catalog = () => {
   const sizes = ['52', '54', '56', '58'];
   const colors = ['белый', 'бирюзовый', 'бордовый', 'голубой', 'графит', 'какао', 'капучино', 'кремовый', 'медовый', 'молочный', 'пудровый', 'сливочный', 'хаки', 'черный'];
 
+  const loadFavorites = useCallback(async () => {
+    if (!token) return;
+    try {
+      const response = await fetch('https://functions.poehali.dev/1acb2ff3-32cc-4c22-bc8e-ae0c0ed2725e', {
+        headers: { 'X-Auth-Token': token }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setFavoriteIds(data.favorites || []);
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки избранного:', error);
+    }
+  }, [token]);
+
   useEffect(() => {
     const category = searchParams.get('category');
     if (category) {
@@ -434,12 +457,93 @@ const Catalog = () => {
     }
   }, [searchParams]);
 
-  const addToCart = () => {
-    setCartCount(prev => prev + 1);
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      loadFavorites();
+    }
+  }, [isAuthenticated, token, loadFavorites]);
+
+  const addToCart = async (product: Product) => {
+    if (!isAuthenticated) {
+      toast({ title: 'Войдите в аккаунт', description: 'Для добавления в корзину необходимо войти' });
+      navigate('/account');
+      return;
+    }
+    setSelectedProduct(product);
+    setSelectedSize(product.sizes[0]);
+    setShowAddToCartDialog(true);
   };
 
-  const addToWishlist = () => {
-    setWishlistCount(prev => prev + 1);
+  const confirmAddToCart = async () => {
+    if (!token || !selectedProduct) return;
+    
+    try {
+      const response = await fetch('https://functions.poehali.dev/ee3bd9b6-73fd-44fb-9410-029d073db932', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Auth-Token': token
+        },
+        body: JSON.stringify({
+          product_id: selectedProduct.id,
+          size: selectedSize,
+          quantity: 1
+        })
+      });
+      
+      if (response.ok) {
+        toast({ title: 'Товар добавлен в корзину' });
+        setCartCount(prev => prev + 1);
+        setShowAddToCartDialog(false);
+      }
+    } catch (error) {
+      toast({ title: 'Ошибка', description: 'Не удалось добавить в корзину', variant: 'destructive' });
+    }
+  };
+
+  const toggleFavorite = async (productId: number) => {
+    if (!isAuthenticated) {
+      toast({ title: 'Войдите в аккаунт', description: 'Для добавления в избранное необходимо войти' });
+      navigate('/account');
+      return;
+    }
+
+    if (!token) return;
+    
+    const isFavorite = favoriteIds.includes(productId);
+    
+    try {
+      if (isFavorite) {
+        const response = await fetch(
+          `https://functions.poehali.dev/1acb2ff3-32cc-4c22-bc8e-ae0c0ed2725e?product_id=${productId}`,
+          {
+            method: 'DELETE',
+            headers: { 'X-Auth-Token': token }
+          }
+        );
+        
+        if (response.ok) {
+          setFavoriteIds(favoriteIds.filter(id => id !== productId));
+          toast({ title: 'Удалено из избранного' });
+        }
+      } else {
+        const response = await fetch('https://functions.poehali.dev/1acb2ff3-32cc-4c22-bc8e-ae0c0ed2725e', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Auth-Token': token
+          },
+          body: JSON.stringify({ product_id: productId })
+        });
+        
+        if (response.ok) {
+          setFavoriteIds([...favoriteIds, productId]);
+          toast({ title: 'Добавлено в избранное' });
+        }
+      }
+    } catch (error) {
+      toast({ title: 'Ошибка', variant: 'destructive' });
+    }
   };
 
   const toggleCategory = (category: string) => {
@@ -647,12 +751,11 @@ const Catalog = () => {
               {currentProducts.map((product, index) => (
             <Card 
               key={product.id} 
-              className="group cursor-pointer overflow-hidden border-border hover:shadow-lg transition-shadow animate-fade-in"
+              className="group overflow-hidden border-border hover:shadow-lg transition-shadow animate-fade-in"
               style={{ animationDelay: `${index * 0.1}s` }}
-              onClick={() => setSelectedProduct(product)}
             >
               <CardContent className="p-0">
-                <div className="relative aspect-[3/4] overflow-hidden">
+                <div className="relative aspect-[3/4] overflow-hidden cursor-pointer" onClick={() => setSelectedProduct(product)}>
                   <img 
                     src={product.image}
                     alt={product.name}
@@ -674,19 +777,19 @@ const Catalog = () => {
                   <Button
                     size="icon"
                     variant="ghost"
-                    className="absolute top-2 right-2 bg-white/80 hover:bg-white"
+                    className={`absolute top-2 right-2 bg-white/80 hover:bg-white ${favoriteIds.includes(product.id) ? 'text-red-500' : ''}`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      addToWishlist();
+                      toggleFavorite(product.id);
                     }}
                   >
-                    <Icon name="Heart" size={18} />
+                    <Icon name={favoriteIds.includes(product.id) ? "Heart" : "Heart"} size={18} fill={favoriteIds.includes(product.id) ? "currentColor" : "none"} />
                   </Button>
                 </div>
                 <div className="p-4">
                   <p className="text-sm text-muted-foreground mb-1">{product.category}</p>
                   <h3 className="font-heading font-semibold mb-2">{product.name}</h3>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 mb-3">
                     <span className="font-bold">{product.price.toLocaleString()}₽</span>
                     {product.oldPrice && (
                       <span className="text-sm text-muted-foreground line-through">
@@ -694,9 +797,20 @@ const Catalog = () => {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground mt-2">
+                  <p className="text-xs text-muted-foreground mb-3">
                     Размеры: {product.sizes.join(', ')}
                   </p>
+                  <Button 
+                    className="w-full" 
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      addToCart(product);
+                    }}
+                  >
+                    <Icon name="ShoppingBag" size={16} className="mr-2" />
+                    В корзину
+                  </Button>
                 </div>
               </CardContent>
               </Card>
@@ -751,7 +865,7 @@ const Catalog = () => {
         </div>
       </div>
 
-      <Dialog open={!!selectedProduct} onOpenChange={() => setSelectedProduct(null)}>
+      <Dialog open={!!selectedProduct && !showAddToCartDialog} onOpenChange={() => setSelectedProduct(null)}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           {selectedProduct && (
             <>
@@ -786,27 +900,26 @@ const Catalog = () => {
                   </div>
 
                   <div>
-                    <p className="font-medium mb-3">Выберите размер:</p>
-                    <div className="flex gap-2">
-                      {selectedProduct.sizes.map(size => (
-                        <Button key={size} variant="outline" className="w-16">
-                          {size}
-                        </Button>
-                      ))}
-                    </div>
+                    <p className="font-medium mb-3">Доступные размеры:</p>
+                    <p className="text-sm text-muted-foreground">{selectedProduct.sizes.join(', ')}</p>
                     <Button variant="link" className="mt-2 p-0 h-auto text-sm" onClick={(e) => { e.stopPropagation(); setShowSizeTable(true); }}>
                       Таблица размеров
                     </Button>
                   </div>
 
                   <div className="space-y-3">
-                    <Button size="lg" className="w-full" onClick={addToCart}>
+                    <Button size="lg" className="w-full" onClick={() => addToCart(selectedProduct)}>
                       <Icon name="ShoppingBag" size={20} className="mr-2" />
                       Добавить в корзину
                     </Button>
-                    <Button size="lg" variant="outline" className="w-full" onClick={addToWishlist}>
-                      <Icon name="Heart" size={20} className="mr-2" />
-                      В избранное
+                    <Button 
+                      size="lg" 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => toggleFavorite(selectedProduct.id)}
+                    >
+                      <Icon name="Heart" size={20} className="mr-2" fill={favoriteIds.includes(selectedProduct.id) ? "currentColor" : "none"} />
+                      {favoriteIds.includes(selectedProduct.id) ? 'В избранном' : 'В избранное'}
                     </Button>
                   </div>
 
@@ -829,6 +942,54 @@ const Catalog = () => {
                 </div>
               </div>
             </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showAddToCartDialog} onOpenChange={setShowAddToCartDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Выберите размер</DialogTitle>
+          </DialogHeader>
+          {selectedProduct && (
+            <div className="space-y-4">
+              <div className="flex gap-4">
+                <img
+                  src={selectedProduct.image}
+                  alt={selectedProduct.name}
+                  className="w-20 h-28 object-cover rounded"
+                />
+                <div className="flex-1">
+                  <p className="font-semibold">{selectedProduct.name}</p>
+                  <p className="text-lg font-bold mt-1">{selectedProduct.price.toLocaleString()}₽</p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Размер</Label>
+                <Select value={selectedSize} onValueChange={setSelectedSize}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Выберите размер" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {selectedProduct.sizes.map(size => (
+                      <SelectItem key={size} value={size}>
+                        {size}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" className="flex-1" onClick={() => setShowAddToCartDialog(false)}>
+                  Отмена
+                </Button>
+                <Button className="flex-1" onClick={confirmAddToCart}>
+                  Добавить
+                </Button>
+              </div>
+            </div>
           )}
         </DialogContent>
       </Dialog>
