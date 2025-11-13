@@ -625,9 +625,9 @@ const Catalog = () => {
               </Button>
               <Button variant="ghost" size="icon" className="relative text-white hover:text-white/80">
                 <Icon name="Heart" size={20} />
-                {wishlistCount > 0 && (
+                {favoriteIds.length > 0 && (
                   <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {wishlistCount}
+                    {favoriteIds.length}
                   </span>
                 )}
               </Button>
