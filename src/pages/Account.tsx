@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -69,18 +69,12 @@ const Account = () => {
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(false);
 
-  useEffect(() => {
-    if (isAuthenticated && token) {
-      loadFavorites();
-      loadProfile();
-    }
-  }, [isAuthenticated, token]);
-
-  const loadFavorites = async () => {
+  const loadFavorites = useCallback(async () => {
+    if (!token) return;
     setLoadingFavorites(true);
     try {
       const response = await fetch('https://functions.poehali.dev/1acb2ff3-32cc-4c22-bc8e-ae0c0ed2725e', {
-        headers: { 'X-Auth-Token': token! }
+        headers: { 'X-Auth-Token': token }
       });
       const data = await response.json();
       if (response.ok) {
@@ -91,13 +85,14 @@ const Account = () => {
     } finally {
       setLoadingFavorites(false);
     }
-  };
+  }, [token]);
 
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
+    if (!token) return;
     setLoadingProfile(true);
     try {
       const response = await fetch('https://functions.poehali.dev/ce78da1c-3a08-43fd-a3bf-dd0319dd105a', {
-        headers: { 'X-Auth-Token': token! }
+        headers: { 'X-Auth-Token': token }
       });
       const data = await response.json();
       if (response.ok) {
@@ -114,7 +109,7 @@ const Account = () => {
     } finally {
       setLoadingProfile(false);
     }
-  };
+  }, [token]);
 
   const updateProfile = async () => {
     if (!token) return;
@@ -152,6 +147,13 @@ const Account = () => {
       setLoadingProfile(false);
     }
   };
+
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      loadFavorites();
+      loadProfile();
+    }
+  }, [isAuthenticated, token, loadFavorites, loadProfile]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
