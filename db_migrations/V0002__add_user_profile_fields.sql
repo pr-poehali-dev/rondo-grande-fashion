@@ -1,0 +1,4 @@
+ALTER TABLE users 
+ADD COLUMN address TEXT,
+ADD COLUMN delivery_type VARCHAR(100),
+ADD COLUMN payment_type VARCHAR(100);
