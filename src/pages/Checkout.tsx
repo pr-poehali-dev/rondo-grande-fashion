@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -7,11 +8,59 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import Icon from '@/components/ui/icon';
+import { useToast } from '@/hooks/use-toast';
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const { user, token, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
   const [deliveryMethod, setDeliveryMethod] = useState('courier');
   const [paymentMethod, setPaymentMethod] = useState('card');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      loadProfileData();
+    }
+  }, [isAuthenticated, token]);
+
+  const loadProfileData = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch('https://functions.poehali.dev/ce78da1c-3a08-43fd-a3bf-dd0319dd105a', {
+        headers: { 'X-Auth-Token': token! }
+      });
+      const data = await response.json();
+      
+      if (response.ok) {
+        setName(data.name || '');
+        setPhone(data.phone || '');
+        setEmail(data.email || '');
+        setAddress(data.address || '');
+        
+        if (data.delivery_type) {
+          setDeliveryMethod(data.delivery_type);
+        }
+        if (data.payment_type) {
+          setPaymentMethod(data.payment_type);
+        }
+        
+        toast({ 
+          title: 'Данные загружены из профиля',
+          description: 'Проверьте и при необходимости измените данные'
+        });
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки данных профиля:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const orderItems = [
     {
@@ -53,7 +102,14 @@ const Checkout = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <h2 className="font-heading text-3xl font-bold mb-8">Оформление заказа</h2>
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="font-heading text-3xl font-bold">Оформление заказа</h2>
+          {isAuthenticated && (
+            <p className="text-sm text-muted-foreground">
+              {loading ? 'Загрузка данных...' : 'Данные из профиля загружены'}
+            </p>
+          )}
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-7 space-y-6">
@@ -65,23 +121,34 @@ const Checkout = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="firstName">Имя</Label>
-                    <Input id="firstName" placeholder="Анна" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="lastName">Фамилия</Label>
-                    <Input id="lastName" placeholder="Иванова" />
-                  </div>
+                <div className="space-y-2">
+                  <Label htmlFor="name">Имя</Label>
+                  <Input 
+                    id="name" 
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Введите имя" 
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Телефон</Label>
-                  <Input id="phone" type="tel" placeholder="+7 (999) 123-45-67" />
+                  <Input 
+                    id="phone" 
+                    type="tel" 
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="+7 (999) 123-45-67" 
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" placeholder="anna@example.com" />
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="anna@example.com" 
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -120,17 +187,44 @@ const Checkout = () => {
                       </div>
                     </Label>
                   </div>
+
+                  <div className="flex items-start space-x-3 space-y-0 rounded-md border p-4 cursor-pointer hover:bg-accent/50 transition-colors mt-3">
+                    <RadioGroupItem value="post" id="post" />
+                    <Label htmlFor="post" className="flex-1 cursor-pointer">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-semibold">Почта России</p>
+                          <p className="text-sm text-muted-foreground">Доставка 5-14 дней</p>
+                        </div>
+                        <p className="font-semibold">300₽</p>
+                      </div>
+                    </Label>
+                  </div>
+
+                  <div className="flex items-start space-x-3 space-y-0 rounded-md border p-4 cursor-pointer hover:bg-accent/50 transition-colors mt-3">
+                    <RadioGroupItem value="cdek" id="cdek" />
+                    <Label htmlFor="cdek" className="flex-1 cursor-pointer">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-semibold">СДЭК</p>
+                          <p className="text-sm text-muted-foreground">Доставка 3-7 дней</p>
+                        </div>
+                        <p className="font-semibold">400₽</p>
+                      </div>
+                    </Label>
+                  </div>
                 </RadioGroup>
 
-                {deliveryMethod === 'courier' && (
+                {(deliveryMethod === 'courier' || deliveryMethod === 'post' || deliveryMethod === 'cdek') && (
                   <div className="mt-6 space-y-4 animate-fade-in">
                     <div className="space-y-2">
-                      <Label htmlFor="city">Город</Label>
-                      <Input id="city" placeholder="Москва" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="address">Адрес</Label>
-                      <Input id="address" placeholder="ул. Ленина, д. 1, кв. 1" />
+                      <Label htmlFor="address">Адрес доставки</Label>
+                      <Input 
+                        id="address" 
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        placeholder="Город, улица, дом, квартира" 
+                      />
                     </div>
                   </div>
                 )}
