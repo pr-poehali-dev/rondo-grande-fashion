@@ -616,7 +616,24 @@ const Catalog = () => {
               <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Жакеты')}>Жакеты</Button>
               <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Блузы и рубашки')}>Блузы и рубашки</Button>
               <Button variant="ghost" className="font-medium text-white hover:text-white/80" onClick={() => navigate('/catalog?category=Свитшоты, худи и лонгсливы')}>Свитшоты и худи</Button>
-              <Button variant="ghost" className="text-destructive font-semibold">Распродажа</Button>
+              <Button variant="ghost" className="font-medium text-white hover:text-white/80 relative" onClick={() => navigate('/cart')}>
+                <Icon name="ShoppingBag" size={18} className="mr-2" />
+                Корзина
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Button>
+              <Button variant="ghost" className="font-medium text-white hover:text-white/80 relative" onClick={() => navigate('/account')}>
+                <Icon name="Heart" size={18} className="mr-2" />
+                Избранное
+                {favoriteIds.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {favoriteIds.length}
+                  </span>
+                )}
+              </Button>
             </nav>
 
             <div className="flex items-center gap-2">
