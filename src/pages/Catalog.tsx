@@ -640,22 +640,6 @@ const Catalog = () => {
               <Button variant="ghost" size="icon" className="text-white hover:text-white/80" onClick={() => navigate('/account')}>
                 <Icon name="User" size={20} />
               </Button>
-              <Button variant="ghost" size="icon" className="relative text-white hover:text-white/80">
-                <Icon name="Heart" size={20} />
-                {favoriteIds.length > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {favoriteIds.length}
-                  </span>
-                )}
-              </Button>
-              <Button variant="ghost" size="icon" className="relative text-white hover:text-white/80" onClick={() => navigate('/cart')}>
-                <Icon name="ShoppingBag" size={20} />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {cartCount}
-                  </span>
-                )}
-              </Button>
             </div>
           </div>
         </div>
