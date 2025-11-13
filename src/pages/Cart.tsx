@@ -325,7 +325,12 @@ const Cart = () => {
                     />
                   </div>
 
-                  <Button className="w-full" size="lg" onClick={() => navigate('/checkout')}>
+                  <Button 
+                    className="w-full" 
+                    size="lg" 
+                    onClick={() => navigate('/checkout')}
+                    disabled={cartItems.length === 0}
+                  >
                     Оформить заказ
                   </Button>
 

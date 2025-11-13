@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,35 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
 import Icon from '@/components/ui/icon';
 import { useToast } from '@/hooks/use-toast';
+
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  image: string;
+}
+
+interface CartItem {
+  id: number;
+  product_id: number;
+  size: string;
+  quantity: number;
+}
+
+const allProducts: Product[] = [
+  {
+    id: 1,
+    name: 'Платье миди с запахом',
+    price: 8900,
+    image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/691f3ee5-ed1e-44b8-9454-b2e4654cc790.jpg',
+  },
+  {
+    id: 2,
+    name: 'Блуза классическая',
+    price: 4900,
+    image: 'https://cdn.poehali.dev/projects/7e807b46-3f0a-41ac-8536-649c73b68a4b/files/a611f61e-75a0-498e-9633-c1044afb2b86.jpg',
+  },
+];
 
 const Checkout = () => {
   const navigate = useNavigate();
@@ -22,10 +51,41 @@ const Checkout = () => {
   const [deliveryMethod, setDeliveryMethod] = useState('courier');
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [loading, setLoading] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [loadingCart, setLoadingCart] = useState(true);
+
+  const loadCart = useCallback(async () => {
+    if (!token) return;
+    setLoadingCart(true);
+    try {
+      const response = await fetch('https://functions.poehali.dev/ee3bd9b6-73fd-44fb-9410-029d073db932', {
+        headers: { 'X-Auth-Token': token }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setCartItems(data.cart || []);
+        if (data.cart.length === 0) {
+          toast({
+            title: 'Корзина пуста',
+            description: 'Добавьте товары для оформления заказа',
+            variant: 'destructive'
+          });
+          navigate('/cart');
+        }
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки корзины:', error);
+    } finally {
+      setLoadingCart(false);
+    }
+  }, [token, navigate, toast]);
 
   useEffect(() => {
     if (isAuthenticated && token) {
+      loadCart();
       loadProfileData();
+    } else {
+      navigate('/account');
     }
   }, [isAuthenticated, token]);
 
@@ -62,25 +122,18 @@ const Checkout = () => {
     }
   };
 
-  const orderItems = [
-    {
-      id: 1,
-      name: 'Платье миди с запахом',
-      price: 8900,
-      size: '52',
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: 'Блуза классическая',
-      price: 4900,
-      size: '54',
-      quantity: 2,
-    },
-  ];
+  const getProductDetails = (productId: number): Product | undefined => {
+    return allProducts.find(p => p.id === productId);
+  };
 
-  const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const deliveryCost = deliveryMethod === 'courier' ? 500 : 0;
+  const subtotal = cartItems.reduce((sum, item) => {
+    const product = getProductDetails(item.product_id);
+    return sum + (product?.price || 0) * item.quantity;
+  }, 0);
+  
+  const deliveryCost = deliveryMethod === 'courier' ? 500 : 
+                       deliveryMethod === 'post' ? 300 : 
+                       deliveryMethod === 'cdek' ? 400 : 0;
   const total = subtotal + deliveryCost;
 
   return (
@@ -102,6 +155,17 @@ const Checkout = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8">
+        {loadingCart ? (
+          <div className="text-center py-16">
+            <p className="text-muted-foreground">Загрузка заказа...</p>
+          </div>
+        ) : cartItems.length === 0 ? (
+          <div className="text-center py-16">
+            <h3 className="font-heading text-2xl font-semibold mb-4">Корзина пуста</h3>
+            <Button onClick={() => navigate('/cart')}>Вернуться в корзину</Button>
+          </div>
+        ) : (
+        <>
         <div className="flex items-center justify-between mb-8">
           <h2 className="font-heading text-3xl font-bold">Оформление заказа</h2>
           {isAuthenticated && (
@@ -284,24 +348,27 @@ const Checkout = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-3">
-                  {orderItems.map((item) => (
+                  {cartItems.map((item) => {
+                    const product = getProductDetails(item.product_id);
+                    if (!product) return null;
+                    return (
                     <div key={item.id} className="flex justify-between text-sm">
                       <div className="flex-1">
-                        <p className="font-medium">{item.name}</p>
+                        <p className="font-medium">{product.name}</p>
                         <p className="text-muted-foreground">
                           Размер: {item.size} • {item.quantity} шт.
                         </p>
                       </div>
-                      <p className="font-semibold">{(item.price * item.quantity).toLocaleString()}₽</p>
+                      <p className="font-semibold">{(product.price * item.quantity).toLocaleString()}₽</p>
                     </div>
-                  ))}
+                  )})}
                 </div>
 
                 <Separator />
 
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Товары ({orderItems.length})</span>
+                    <span className="text-muted-foreground">Товары ({cartItems.length})</span>
                     <span>{subtotal.toLocaleString()}₽</span>
                   </div>
                   <div className="flex justify-between">
@@ -335,6 +402,8 @@ const Checkout = () => {
             </Card>
           </div>
         </div>
+        </>
+        )}
       </div>
     </div>
   );
