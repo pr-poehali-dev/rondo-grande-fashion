@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Icon from '@/components/ui/icon';
+import { useToast } from '@/hooks/use-toast';
 
 interface Product {
   id: number;
@@ -18,7 +21,7 @@ interface Product {
   isBestseller?: boolean;
 }
 
-const favoriteProducts: Product[] = [
+const allProducts: Product[] = [
   {
     id: 1,
     name: 'Платье миди с запахом',
@@ -42,11 +45,188 @@ const favoriteProducts: Product[] = [
 
 const Account = () => {
   const navigate = useNavigate();
-  const [favorites, setFavorites] = useState<Product[]>(favoriteProducts);
+  const { user, token, login, register, logout, isAuthenticated } = useAuth();
+  const { toast } = useToast();
+  
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
+  const [loadingFavorites, setLoadingFavorites] = useState(false);
 
-  const removeFavorite = (id: number) => {
-    setFavorites(favorites.filter(item => item.id !== id));
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      loadFavorites();
+    }
+  }, [isAuthenticated, token]);
+
+  const loadFavorites = async () => {
+    setLoadingFavorites(true);
+    try {
+      const response = await fetch('https://functions.poehali.dev/1acb2ff3-32cc-4c22-bc8e-ae0c0ed2725e', {
+        headers: { 'X-Auth-Token': token! }
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setFavoriteIds(data.favorites || []);
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки избранного:', error);
+    } finally {
+      setLoadingFavorites(false);
+    }
   };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      if (isLogin) {
+        await login(email, password);
+        toast({ title: 'Вход выполнен успешно' });
+      } else {
+        await register(email, password, name);
+        toast({ title: 'Регистрация выполнена успешно' });
+      }
+      setEmail('');
+      setPassword('');
+      setName('');
+    } catch (error: any) {
+      toast({ 
+        title: 'Ошибка', 
+        description: error.message,
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const removeFavorite = async (productId: number) => {
+    if (!token) return;
+    
+    try {
+      const response = await fetch(
+        `https://functions.poehali.dev/1acb2ff3-32cc-4c22-bc8e-ae0c0ed2725e?product_id=${productId}`,
+        {
+          method: 'DELETE',
+          headers: { 'X-Auth-Token': token }
+        }
+      );
+      
+      if (response.ok) {
+        setFavoriteIds(favoriteIds.filter(id => id !== productId));
+        toast({ title: 'Удалено из избранного' });
+      }
+    } catch (error) {
+      toast({ 
+        title: 'Ошибка', 
+        description: 'Не удалось удалить из избранного',
+        variant: 'destructive'
+      });
+    }
+  };
+
+  const favoriteProducts = allProducts.filter(p => favoriteIds.includes(p.id));
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background">
+        <header className="sticky top-0 z-50 border-b border-border" style={{backgroundColor: '#878070'}}>
+          <div className="container mx-auto px-4 py-4">
+            <div className="flex items-center justify-between gap-4">
+              <h1 
+                className="font-heading text-2xl font-bold tracking-tight text-white cursor-pointer"
+                onClick={() => navigate('/')}
+              >
+                RONDO GRANDE
+              </h1>
+              <Button variant="ghost" size="icon" className="text-white hover:text-white/80" onClick={() => navigate('/cart')}>
+                <Icon name="ShoppingBag" size={20} />
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        <div className="container mx-auto px-4 py-12">
+          <Card className="max-w-md mx-auto">
+            <CardContent className="p-8">
+              <h2 className="font-heading text-2xl font-bold mb-6 text-center">
+                {isLogin ? 'Вход' : 'Регистрация'}
+              </h2>
+              
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {!isLogin && (
+                  <div className="space-y-2">
+                    <Label htmlFor="name">Имя</Label>
+                    <Input
+                      id="name"
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      placeholder="Введите имя"
+                      required={!isLogin}
+                    />
+                  </div>
+                )}
+                
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="password">Пароль</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                  />
+                </div>
+
+                <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? 'Загрузка...' : isLogin ? 'Войти' : 'Зарегистрироваться'}
+                </Button>
+              </form>
+
+              <div className="mt-4 text-center">
+                <button
+                  type="button"
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-sm text-muted-foreground hover:text-foreground"
+                >
+                  {isLogin ? 'Нет аккаунта? Зарегистрируйтесь' : 'Уже есть аккаунт? Войдите'}
+                </button>
+              </div>
+
+              <Button 
+                variant="outline" 
+                className="w-full mt-4" 
+                onClick={() => navigate('/')}
+              >
+                <Icon name="ArrowLeft" size={16} className="mr-2" />
+                На главную
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -68,9 +248,9 @@ const Account = () => {
               </Button>
               <Button variant="ghost" size="icon" className="relative text-white hover:text-white/80">
                 <Icon name="Heart" size={20} />
-                {favorites.length > 0 && (
+                {favoriteIds.length > 0 && (
                   <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {favorites.length}
+                    {favoriteIds.length}
                   </span>
                 )}
               </Button>
@@ -83,7 +263,13 @@ const Account = () => {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        <h2 className="font-heading text-3xl font-bold mb-8">Личный кабинет</h2>
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="font-heading text-3xl font-bold">Личный кабинет</h2>
+          <Button variant="outline" onClick={logout}>
+            <Icon name="LogOut" size={16} className="mr-2" />
+            Выйти
+          </Button>
+        </div>
 
         <Tabs defaultValue="favorites" className="space-y-6">
           <TabsList className="grid w-full max-w-md grid-cols-3">
@@ -102,7 +288,13 @@ const Account = () => {
           </TabsList>
 
           <TabsContent value="favorites" className="space-y-6">
-            {favorites.length === 0 ? (
+            {loadingFavorites ? (
+              <Card>
+                <CardContent className="flex items-center justify-center py-16">
+                  <p className="text-muted-foreground">Загрузка...</p>
+                </CardContent>
+              </Card>
+            ) : favoriteProducts.length === 0 ? (
               <Card>
                 <CardContent className="flex flex-col items-center justify-center py-16">
                   <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center mb-4">
@@ -119,7 +311,7 @@ const Account = () => {
               </Card>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {favorites.map((product) => (
+                {favoriteProducts.map((product) => (
                   <Card key={product.id} className="group overflow-hidden border-border hover:shadow-lg transition-shadow">
                     <CardContent className="p-0">
                       <div className="relative aspect-[3/4] overflow-hidden">
@@ -128,19 +320,6 @@ const Account = () => {
                           alt={product.name}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
-                        <div className="absolute top-2 left-2 flex flex-col gap-2">
-                          {product.isNew && (
-                            <Badge className="bg-primary text-primary-foreground">Новинка</Badge>
-                          )}
-                          {product.isBestseller && (
-                            <Badge variant="secondary">Хит продаж</Badge>
-                          )}
-                          {product.oldPrice && (
-                            <Badge variant="destructive">
-                              -{Math.round((1 - product.price / product.oldPrice) * 100)}%
-                            </Badge>
-                          )}
-                        </div>
                         <Button
                           size="icon"
                           variant="ghost"
@@ -161,9 +340,6 @@ const Account = () => {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-muted-foreground mt-2">
-                          Размеры: {product.sizes.join(', ')}
-                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -195,48 +371,15 @@ const Account = () => {
                 <div>
                   <h3 className="font-heading text-lg font-semibold mb-4">Личные данные</h3>
                   <div className="space-y-4">
-                    <div className="flex justify-between items-center py-3 border-b">
-                      <div>
-                        <p className="font-medium">Имя</p>
-                        <p className="text-sm text-muted-foreground">Анна Иванова</p>
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        <Icon name="Edit" size={16} />
-                      </Button>
+                    <div>
+                      <Label>Имя</Label>
+                      <p className="mt-1 text-lg">{user?.name || 'Не указано'}</p>
                     </div>
-                    <div className="flex justify-between items-center py-3 border-b">
-                      <div>
-                        <p className="font-medium">Email</p>
-                        <p className="text-sm text-muted-foreground">anna@example.com</p>
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        <Icon name="Edit" size={16} />
-                      </Button>
-                    </div>
-                    <div className="flex justify-between items-center py-3 border-b">
-                      <div>
-                        <p className="font-medium">Телефон</p>
-                        <p className="text-sm text-muted-foreground">+7 (999) 123-45-67</p>
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        <Icon name="Edit" size={16} />
-                      </Button>
+                    <div>
+                      <Label>Email</Label>
+                      <p className="mt-1 text-lg">{user?.email}</p>
                     </div>
                   </div>
-                </div>
-
-                <div>
-                  <h3 className="font-heading text-lg font-semibold mb-4">Адреса доставки</h3>
-                  <Button variant="outline" className="w-full">
-                    <Icon name="Plus" size={16} className="mr-2" />
-                    Добавить адрес
-                  </Button>
-                </div>
-
-                <div className="pt-4 border-t">
-                  <Button variant="destructive" className="w-full">
-                    Выйти из аккаунта
-                  </Button>
                 </div>
               </CardContent>
             </Card>
