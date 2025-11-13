@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Get favorites unauthorized",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
